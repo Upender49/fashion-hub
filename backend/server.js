@@ -36,6 +36,9 @@ app.use(cors());
 app.use(express.json());
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/fashionhub';
+const maskedURI = MONGO_URI.replace(/:([^:@]+)@/, ':****@');
+console.log(`📡 Attempting to connect to: ${maskedURI}`);
+
 mongoose.connect(MONGO_URI)
   .then(() => console.log('✅ Connected to MongoDB Database'))
   .catch(err => console.error('❌ Database connection error:', err));
