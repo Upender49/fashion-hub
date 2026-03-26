@@ -1,4 +1,4 @@
-import { state, API_URL } from '../state.js';
+import { state } from '../state.js';
 import { Toast } from '../utils/toast.js';
 import { Auth } from './auth.js';
 import { navigate } from '../main.js';
@@ -23,7 +23,7 @@ export const Cart = {
     }
     
     try {
-      const response = await fetch(`${API_URL}/api/cart`, {
+      const response = await fetch('http://localhost:5000/api/cart', {
         headers: this.getHeaders()
       });
       if (response.ok) {
@@ -39,7 +39,7 @@ export const Cart = {
   async addToCart(id) {
     if (!Auth.requireAuth('add items to cart')) return;
     try {
-      const response = await fetch(`${API_URL}/api/cart/add`, {
+      const response = await fetch('http://localhost:5000/api/cart/add', {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify({ productId: id })
@@ -66,7 +66,7 @@ export const Cart = {
 
   async removeFromCart(cartItemId) {
     try {
-      const response = await fetch(`${API_URL}/api/cart/remove/${cartItemId}`, {
+      const response = await fetch(`http://localhost:5000/api/cart/remove/${cartItemId}`, {
         method: 'DELETE',
         headers: this.getHeaders()
       });
@@ -81,7 +81,7 @@ export const Cart = {
 
   async updateQty(cartItemId, delta) {
     try {
-      const response = await fetch(`${API_URL}/api/cart/update/${cartItemId}`, {
+      const response = await fetch(`http://localhost:5000/api/cart/update/${cartItemId}`, {
         method: 'PUT',
         headers: this.getHeaders(),
         body: JSON.stringify({ delta })
@@ -126,7 +126,7 @@ export const Cart = {
     container.innerHTML = state.cart.map(item => `
       <div class="cart-item">
         <div class="cart-item-img">
-          ${item.image_url ? `<img src="${item.image_url.startsWith('http') ? item.image_url : API_URL + item.image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" alt="${item.name}">` : item.emoji}
+          ${item.image_url ? `<img src="${item.image_url.startsWith('http') ? item.image_url : 'http://localhost:5000' + item.image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" alt="${item.name}">` : item.emoji}
         </div>
         <div class="cart-item-details">
           <div class="cart-item-name">${item.name}</div>
@@ -166,7 +166,7 @@ export const Cart = {
     const address = prompt('📦 Enter your shipping address to complete the order:');
     if (!address || !address.trim()) return Toast.show('Shipping address is required', 'info');
 
-    fetch(`${API_URL}/api/orders/checkout`, {
+    fetch('http://localhost:5000/api/orders/checkout', {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify({ shippingAddress: address.trim() })

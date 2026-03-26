@@ -1,9 +1,8 @@
 import { state } from '../state.js';
 import { Toast } from '../utils/toast.js';
-import { API_URL } from '../state.js';
 import { navigate } from '../main.js';
 
-const API = API_URL;
+const API = 'http://localhost:5000';
 
 function getHeaders() {
   return {

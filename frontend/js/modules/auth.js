@@ -1,4 +1,4 @@
-import { state, API_URL } from '../state.js';
+import { state } from '../state.js';
 import { Toast } from '../utils/toast.js';
 import { navigate } from '../main.js';
 import { Cart } from './cart.js';
@@ -17,7 +17,7 @@ export const Auth = {
     if (password !== confirm) return Toast.show('Passwords do not match', 'info');
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/signup`, {
+      const response = await fetch('http://localhost:5000/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password })
@@ -50,7 +50,7 @@ export const Auth = {
     if (!email || !password) return Toast.show('Please fill all fields', 'info');
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -82,7 +82,7 @@ export const Auth = {
     if (!this.pendingEmail) return Toast.show('Session expired. Please log in again.', 'info');
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/verify-otp`, {
+      const response = await fetch('http://localhost:5000/api/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: this.pendingEmail, otp })

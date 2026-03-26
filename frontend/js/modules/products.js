@@ -1,10 +1,10 @@
-import { state, API_URL } from '../state.js';
+import { state } from '../state.js';
 import { Toast } from '../utils/toast.js';
 
 export const Products = {
   async fetchProducts() {
     try {
-      const response = await fetch(`${API_URL}/api/products`);
+      const response = await fetch('http://localhost:5000/api/products');
       const data = await response.json();
       state.products = data.map(p => ({ ...p, id: p._id }));
     } catch (error) {
@@ -17,7 +17,7 @@ export const Products = {
     return list.map(p => `
       <div class="product-card" data-id="${p.id}">
         <div class="product-img">
-          ${p.image_url ? `<img src="${p.image_url.startsWith('http') ? p.image_url : API_URL + p.image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;" alt="${p.name}">` : p.emoji}
+          ${p.image_url ? `<img src="${p.image_url.startsWith('http') ? p.image_url : 'http://localhost:5000' + p.image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;" alt="${p.name}">` : p.emoji}
         </div>
         <div class="product-info">
           <div class="product-name">${p.name}</div>

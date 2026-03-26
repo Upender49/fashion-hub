@@ -1,5 +1,4 @@
 require('dotenv').config();
-console.log('🚀 FASHION HUB BACKEND - VERSION 2.0 - LIVE');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -18,17 +17,6 @@ const TryOn = require('./models/TryOn');
 const Order = require('./models/Order');
 
 const app = express();
-// --- DEBUG: Test Email Endpoint ---
-app.get('/api/debug-email', async (req, res) => {
-  try {
-    const testTo = process.env.EMAIL_USER;
-    await sendMail(testTo, '🔬 Fashion Hub Mailer Test', otpEmail('Debug User', '123456'));
-    res.json({ message: `Test email sent to ${testTo}. Check your inbox and Render logs!` });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fashion_key_123';
 
@@ -47,11 +35,8 @@ const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }); // 5M
 app.use(cors());
 app.use(express.json());
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/fashionhub';
-const maskedURI = MONGO_URI.replace(/:([^:@]+)@/, ':****@');
-console.log(`📡 Attempting to connect to: ${maskedURI}`);
-
-mongoose.connect(MONGO_URI)
+// Connect to Database
+mongoose.connect('mongodb://127.0.0.1:27017/fashionhub')
   .then(() => console.log('✅ Connected to MongoDB Database'))
   .catch(err => console.error('❌ Database connection error:', err));
 
@@ -94,12 +79,8 @@ app.post('/api/auth/signup', async (req, res) => {
     const newUser = new User({ name, email, password_hash, otp, otpExpiry, isVerified: false });
     await newUser.save();
 
-    // 6. Send OTP (Log to console for easy demo testing if email fails!)
-    console.log(`🔑 DEBUG OTP for ${newUser.name} (${newUser.email}): ${otp}`);
-    
-    // Attempt to send email in the background (don't block the user if it fails)
-    sendMail(newUser.email, '🔐 Your Fashion Hub Login Code', otpEmail(newUser.name, otp))
-      .catch(mailErr => console.error('Background Email fail:', mailErr.message));
+    // 6. Send OTP Email (non-blocking)
+    sendMail(newUser.email, '🔐 Your Fashion Hub Login Code', otpEmail(newUser.name, otp));
 
     // 7. Tell frontend that OTP is required
     res.status(201).json({
@@ -137,12 +118,8 @@ app.post('/api/auth/login', async (req, res) => {
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    // 5. Send OTP (Log to console for easy demo testing if email fails!)
-    console.log(`🔑 DEBUG OTP for ${user.name} (${user.email}): ${otp}`);
-
-    // Attempt to send email in the background
-    sendMail(user.email, '🔐 Your Fashion Hub Login Code', otpEmail(user.name, otp))
-      .catch(mailErr => console.error('Background Email fail:', mailErr.message));
+    // 5. Send OTP Email (non-blocking)
+    sendMail(user.email, '🔐 Your Fashion Hub Login Code', otpEmail(user.name, otp));
 
     // 6. Tell frontend that OTP is required
     res.json({

@@ -1,7 +1,6 @@
 import { Toast } from '../utils/toast.js';
-import { API_URL } from '../state.js';
 
-const API = API_URL;
+const API = 'http://localhost:5000';
 
 function authHeaders() {
   return { 'Authorization': `Bearer ${localStorage.getItem('fh_token')}` };

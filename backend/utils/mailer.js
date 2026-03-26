@@ -1,40 +1,30 @@
 const nodemailer = require('nodemailer');
 
-/**
- * Configure NodeMailer with Brevo (formerly Sendinblue)
- * This is 100% reliable on Render and allows sending to ANY email address.
- */
 const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false, // true for 465, false for 587
+  service: 'gmail',
   auth: {
-    // This MUST be set in your .env or Render Environment Variables
-    user: process.env.BREVO_USER,
-    // This MUST be the SMTP key provided by Brevo
-    pass: process.env.BREVO_PASS
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
 /**
  * Sends an HTML email.
+ * @param {string} to - Recipient email address
+ * @param {string} subject - Email subject
+ * @param {string} html - HTML body content
  */
 async function sendMail(to, subject, html) {
   try {
-    const fromEmail = process.env.BREVO_USER;
-    if (!fromEmail || !process.env.BREVO_PASS) {
-      throw new Error('Missing BREVO_USER or BREVO_PASS environment variables');
-    }
-    
     await transporter.sendMail({
-      from: `"Fashion Hub 👗" <${fromEmail}>`,
+      from: `"Fashion Hub 👗" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html
     });
-    console.log(`✅ Brevo Success: Email delivered to ${to}`);
+    console.log(`✅ Email sent to ${to}: ${subject}`);
   } catch (err) {
-    console.error('❌ Brevo SMTP Error:', err.message);
+    console.error('❌ Email send failed:', err.message);
   }
 }
 
