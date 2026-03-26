@@ -145,7 +145,7 @@ export const TryOn = {
       <div class="tryon-order-card" id="tryon-${item.tryonId}">
         <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
           <div style="font-size:2.5rem;width:80px;height:80px;display:flex;justify-content:center;align-items:center;background:#f3f3f3;border-radius:12px;overflow:hidden;">
-            ${item.image_url ? `<img src="${item.image_url.startsWith('http') ? item.image_url : 'http://localhost:5000' + item.image_url}" style="width:100%;height:100%;object-fit:cover;">` : item.emoji}
+            ${item.image_url ? `<img src="http://localhost:5000${item.image_url}" style="width:100%;height:100%;object-fit:cover;">` : item.emoji}
           </div>
           <div style="flex:1">
             <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600">${item.name}</div>

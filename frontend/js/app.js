@@ -1,6 +1,4 @@
-// ============================================================
-//  Fashion Hub — Main App Logic
-// ============================================================
+
 
 const App = {
   currentUser: null,
@@ -8,9 +6,7 @@ const App = {
   tryonItems: [],
   users: [],
 
-  // ---- Init ----
   init() {
-    // Load from localStorage
     this.users     = JSON.parse(localStorage.getItem('fh_users') || '[]');
     this.cart      = JSON.parse(localStorage.getItem('fh_cart')  || '[]');
     this.tryonItems= JSON.parse(localStorage.getItem('fh_tryon') || '[]');
@@ -23,12 +19,10 @@ const App = {
     this.renderTryon();
     this.updateNavUser();
 
-    // Route based on hash
     const hash = location.hash.replace('#','') || 'home';
     this.navigate(hash);
   },
 
-  // ---- Navigation ----
   navigate(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById('page-' + page);
@@ -37,7 +31,6 @@ const App = {
     window.scrollTo(0,0);
   },
 
-  // ---- Auth ----
   signup(e) {
     e.preventDefault();
     const name     = document.getElementById('signup-name').value.trim();
@@ -105,7 +98,6 @@ const App = {
     return true;
   },
 
-  // ---- Products ----
   products: [],
   
   async fetchProducts() {
@@ -113,7 +105,6 @@ const App = {
       const response = await fetch('http://localhost:5000/api/products');
       const data = await response.json();
       
-      // Because MongoDB uses _id instead of id, we map it to match your frontend logic
       this.products = data.map(p => ({
         ...p,
         id: p._id // Map MongoDB's unique _id to your frontend's expected 'id'
@@ -151,7 +142,6 @@ const App = {
     this.renderProducts(cat);
   },
 
-  // ---- Cart ----
   addToCart(id) {
     if (!this.requireAuth('add items to cart')) return;
     const product = this.products.find(p => p.id === id);
@@ -259,7 +249,6 @@ const App = {
     setTimeout(() => this.navigate('home'), 1500);
   },
 
-  // ---- Sample Try-On ----
   addToTryon(id) {
     if (!this.requireAuth('use Sample Try-On')) return;
     const product = this.products.find(p => p.id === id);
@@ -433,7 +422,6 @@ const App = {
     this.renderTryon();
     Toast.show('🚀 Try-On order placed! Expected delivery by ' + item.estimatedDelivery, 'tryon');
 
-    // Simulate delivery after 8 seconds (demo)
     setTimeout(() => {
       item.status = 'delivered';
       localStorage.setItem('fh_tryon', JSON.stringify(this.tryonItems));
@@ -459,7 +447,6 @@ const App = {
   },
 };
 
-// ---- Toast ----
 const Toast = {
   show(message, type = 'success') {
     let container = document.getElementById('toast-container');
@@ -473,7 +460,6 @@ const Toast = {
   }
 };
 
-// ---- Event Bindings ----
 document.addEventListener('DOMContentLoaded', () => {
   App.init();
   document.getElementById('signup-form')?.addEventListener('submit', e => App.signup(e));

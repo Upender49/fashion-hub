@@ -22,7 +22,6 @@
     <li><a href="#shop"  onclick="App.navigate('shop')">Shop</a></li>
     <li><a href="#tryon" onclick="App.navigate('tryon')">Try-On</a></li>
     <li><a href="#cart"  onclick="App.navigate('cart')">Cart</a></li>
-
   </ul>
 
   <!-- Hamburger (mobile only) -->
@@ -44,7 +43,6 @@
     <!-- User menu (logged in) -->
     <div id="nav-user" style="display:none;align-items:center;gap:8px">
       <span style="font-size:0.9rem;color:var(--text-muted)">Hi, <strong id="nav-username"></strong></span>
-
       <button class="btn btn-outline btn-sm" onclick="App.logout()">Logout</button>
     </div>
   </div>
@@ -362,9 +360,6 @@
     <li><a onclick="App.navigate('cart');App.closeMenu()">Cart</a></li>
   </ul>
 </div>
-
-<!-- Toast Container -->
-<div id="toast-container" class="toast-container"></div>
 
 <script type="module" src="js/main.js"></script>
 </body>

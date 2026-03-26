@@ -29,20 +29,16 @@ function closeMenu() {
 
 const AppInit = {
   async init() {
-    // 1. Load user from localStorage
     const saved = localStorage.getItem('fh_user');
     if (saved) state.currentUser = JSON.parse(saved);
 
-    // 2. Fetch data from backend
     await Products.fetchProducts();
     await Cart.fetchCart();
     await TryOn.fetchTryon();
 
-    // 3. Render
     Products.renderProducts();
     Auth.updateNavUser();
 
-    // 4. Route — handle reset-password page from email link
     const hash = location.hash.replace('#', '') || 'home';
     const page = hash.split('?')[0]; // strip query params
     navigate(page);
@@ -58,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('reset-form')?.addEventListener('submit', e => AuthReset.resetPassword(e));
 });
 
-// Expose to HTML onclick attributes
 window.App = {
   navigate,
   toggleMenu,

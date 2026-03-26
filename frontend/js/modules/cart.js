@@ -4,7 +4,6 @@ import { Auth } from './auth.js';
 import { navigate } from '../main.js';
 
 export const Cart = {
-  // Helper to attach the JWT token to our requests
   getHeaders() {
     const token = localStorage.getItem('fh_token');
     return {
@@ -13,7 +12,6 @@ export const Cart = {
     };
   },
 
-  // Fetch the cart from the database
   async fetchCart() {
     if (!state.currentUser) {
       state.cart = [];
@@ -21,7 +19,7 @@ export const Cart = {
       this.renderCart();
       return;
     }
-    
+
     try {
       const response = await fetch('http://localhost:5000/api/cart', {
         headers: this.getHeaders()
@@ -70,7 +68,7 @@ export const Cart = {
         method: 'DELETE',
         headers: this.getHeaders()
       });
-      
+
       if (response.ok) {
         await this.fetchCart(); // Refresh the cart
       }
@@ -86,9 +84,9 @@ export const Cart = {
         headers: this.getHeaders(),
         body: JSON.stringify({ delta })
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
         await this.fetchCart(); // Refresh the cart
       } else {
@@ -108,7 +106,7 @@ export const Cart = {
 
   renderCart() {
     const container = document.getElementById('cart-items');
-    const summary   = document.getElementById('cart-summary');
+    const summary = document.getElementById('cart-summary');
     if (!container) return;
 
     if (state.cart.length === 0) {
@@ -126,7 +124,7 @@ export const Cart = {
     container.innerHTML = state.cart.map(item => `
       <div class="cart-item">
         <div class="cart-item-img">
-          ${item.image_url ? `<img src="${item.image_url.startsWith('http') ? item.image_url : 'http://localhost:5000' + item.image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" alt="${item.name}">` : item.emoji}
+          ${item.image_url ? `<img src="http://localhost:5000${item.image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" alt="${item.name}">` : item.emoji}
         </div>
         <div class="cart-item-details">
           <div class="cart-item-name">${item.name}</div>
@@ -147,7 +145,7 @@ export const Cart = {
 
     const subtotal = state.cart.reduce((s, i) => s + i.price * i.qty, 0);
     const shipping = subtotal > 2000 ? 0 : 99;
-    const total    = subtotal + shipping;
+    const total = subtotal + shipping;
 
     if (summary) summary.innerHTML = `
       <h3 style="margin-bottom:1rem;">Order Summary</h3>
@@ -171,18 +169,18 @@ export const Cart = {
       headers: this.getHeaders(),
       body: JSON.stringify({ shippingAddress: address.trim() })
     })
-    .then(res => res.json())
-    .then(async data => {
-      if (data.orderId) {
-        Toast.show('Order placed successfully! 🎉 Thank you for shopping!', 'success');
-        state.cart = [];
-        this.updateCartBadge();
-        this.renderCart();
-        setTimeout(() => navigate('home'), 1500);
-      } else {
-        Toast.show(data.message || 'Checkout failed', 'info');
-      }
-    })
-    .catch(() => Toast.show('Checkout failed. Please try again.', 'info'));
+      .then(res => res.json())
+      .then(async data => {
+        if (data.orderId) {
+          Toast.show('Order placed successfully! 🎉 Thank you for shopping!', 'success');
+          state.cart = [];
+          this.updateCartBadge();
+          this.renderCart();
+          setTimeout(() => navigate('home'), 1500);
+        } else {
+          Toast.show(data.message || 'Checkout failed', 'info');
+        }
+      })
+      .catch(() => Toast.show('Checkout failed. Please try again.', 'info'));
   }
 };

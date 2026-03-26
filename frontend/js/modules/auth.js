@@ -129,23 +129,15 @@ export const Auth = {
   updateNavUser() {
     const authBtns = document.getElementById('nav-auth');
     const userMenu = document.getElementById('nav-user');
-    const adminBtn = document.getElementById('nav-admin-btn');
-    const adminNavLink = document.getElementById('nav-admin-link');
     if (state.currentUser) {
       if (authBtns) authBtns.style.display = 'none';
       if (userMenu) {
         userMenu.style.display = 'flex';
         document.getElementById('nav-username').textContent = state.currentUser.name.split(' ')[0];
       }
-      // Show admin controls only for admins
-      const isAdmin = state.currentUser.isAdmin === true;
-      if (adminBtn) adminBtn.style.display = isAdmin ? 'inline-flex' : 'none';
-      if (adminNavLink) adminNavLink.style.display = isAdmin ? 'list-item' : 'none';
     } else {
       if (authBtns) authBtns.style.display = 'flex';
       if (userMenu) userMenu.style.display = 'none';
-      if (adminBtn) adminBtn.style.display = 'none';
-      if (adminNavLink) adminNavLink.style.display = 'none';
     }
   },
 
