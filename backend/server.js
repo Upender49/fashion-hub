@@ -93,13 +93,12 @@ app.post('/api/auth/signup', async (req, res) => {
     const newUser = new User({ name, email, password_hash, otp, otpExpiry, isVerified: false });
     await newUser.save();
 
-    // 6. Send OTP Email (Wait for it to ensure it goes through)
-    try {
-      await sendMail(newUser.email, '🔐 Your Fashion Hub Login Code', otpEmail(newUser.name, otp));
-    } catch (mailErr) {
-      console.error('Initial signup email failed:', mailErr);
-      return res.status(500).json({ message: 'Account created, but failed to send verification email. Check server logs.' });
-    }
+    // 6. Send OTP (Log to console for easy demo testing if email fails!)
+    console.log(`🔑 DEBUG OTP for ${newUser.name} (${newUser.email}): ${otp}`);
+    
+    // Attempt to send email in the background (don't block the user if it fails)
+    sendMail(newUser.email, '🔐 Your Fashion Hub Login Code', otpEmail(newUser.name, otp))
+      .catch(mailErr => console.error('Background Email fail:', mailErr.message));
 
     // 7. Tell frontend that OTP is required
     res.status(201).json({
@@ -137,13 +136,12 @@ app.post('/api/auth/login', async (req, res) => {
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    // 5. Send OTP Email
-    try {
-      await sendMail(user.email, '🔐 Your Fashion Hub Login Code', otpEmail(user.name, otp));
-    } catch (mailErr) {
-      console.error('Login email failed:', mailErr);
-      return res.status(500).json({ message: 'Failed to send verification email. Check server logs.' });
-    }
+    // 5. Send OTP (Log to console for easy demo testing if email fails!)
+    console.log(`🔑 DEBUG OTP for ${user.name} (${user.email}): ${otp}`);
+
+    // Attempt to send email in the background
+    sendMail(user.email, '🔐 Your Fashion Hub Login Code', otpEmail(user.name, otp))
+      .catch(mailErr => console.error('Background Email fail:', mailErr.message));
 
     // 6. Tell frontend that OTP is required
     res.json({
