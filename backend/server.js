@@ -17,6 +17,17 @@ const TryOn = require('./models/TryOn');
 const Order = require('./models/Order');
 
 const app = express();
+// --- DEBUG: Test Email Endpoint ---
+app.get('/api/debug-email', async (req, res) => {
+  try {
+    const testTo = process.env.EMAIL_USER;
+    await sendMail(testTo, '🔬 Fashion Hub Mailer Test', otpEmail('Debug User', '123456'));
+    res.json({ message: `Test email sent to ${testTo}. Check your inbox and Render logs!` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fashion_key_123';
 
