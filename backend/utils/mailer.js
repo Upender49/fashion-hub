@@ -12,14 +12,14 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false
   },
-  // CRITICAL: Force IPv4 to avoid Render's IPv6 ENETUNREACH error
+  // CRITICAL: Force IPv4 ONLY. Render free tier has broken IPv6 routes.
   family: 4 
 });
 
 // Diagnostic to check if Render can even see Gmail
-dns.lookup('smtp.gmail.com', (err, address) => {
-  if (err) console.error('🌐 DNS Lookup Failed for Gmail:', err.message);
-  else console.log('🌐 DNS Lookup Success. Gmail is at:', address);
+dns.lookup('smtp.gmail.com', { family: 4 }, (err, address) => {
+  if (err) console.error('🌐 DNS Lookup Failed (IPv4) for Gmail:', err.message);
+  else console.log('🌐 DNS Lookup Success (IPv4). Gmail is at:', address);
 });
 
 /**
