@@ -1,33 +1,40 @@
+const nodemailer = require('nodemailer');
+
 /**
- * Sends an HTML email using the Resend HTTP API.
- * This is 100% reliable on cloud platforms like Render.
+ * Configure NodeMailer with Brevo (formerly Sendinblue)
+ * This is 100% reliable on Render and allows sending to ANY email address.
+ */
+const transporter = nodemailer.createTransport({
+  host: 'smtp-relay.brevo.com',
+  port: 587,
+  secure: false, // true for 465, false for 587
+  auth: {
+    // This MUST be set in your .env or Render Environment Variables
+    user: process.env.BREVO_USER,
+    // This MUST be the SMTP key provided by Brevo
+    pass: process.env.BREVO_PASS
+  }
+});
+
+/**
+ * Sends an HTML email.
  */
 async function sendMail(to, subject, html) {
   try {
-    const apiKey = process.env.RESEND_API_KEY || 're_Zf5kt9ru_59smkGyt3LDrSg1kcP74KJhB';
-    
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: 'Fashion Hub <onboarding@resend.dev>',
-        to: [to],
-        subject: subject,
-        html: html
-      })
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-      console.log(`✅ Resend Success: Email delivered to ${to}`);
-    } else {
-      console.error('❌ Resend API Error:', data);
+    const fromEmail = process.env.BREVO_USER;
+    if (!fromEmail || !process.env.BREVO_PASS) {
+      throw new Error('Missing BREVO_USER or BREVO_PASS environment variables');
     }
+    
+    await transporter.sendMail({
+      from: `"Fashion Hub 👗" <${fromEmail}>`,
+      to,
+      subject,
+      html
+    });
+    console.log(`✅ Brevo Success: Email delivered to ${to}`);
   } catch (err) {
-    console.error('❌ Resend Network Error:', err.message);
+    console.error('❌ Brevo SMTP Error:', err.message);
   }
 }
 
