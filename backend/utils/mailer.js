@@ -1,16 +1,24 @@
 const nodemailer = require('nodemailer');
+const dns = require('dns');
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // true for 465, false for other ports
+  port: 465,
+  secure: true, // true for 465, false for 587
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
   tls: {
+    // This helps bypass some cloud certificate issues
     rejectUnauthorized: false
   }
+});
+
+// Diagnostic to check if Render can even see Gmail
+dns.lookup('smtp.gmail.com', (err, address) => {
+  if (err) console.error('🌐 DNS Lookup Failed for Gmail:', err.message);
+  else console.log('🌐 DNS Lookup Success. Gmail is at:', address);
 });
 
 /**
