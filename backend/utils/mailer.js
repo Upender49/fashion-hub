@@ -1,44 +1,33 @@
-const nodemailer = require('nodemailer');
-const dns = require('dns');
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, 
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  // CRITICAL: Force IPv4 ONLY. Render free tier has broken IPv6 routes.
-  family: 4 
-});
-
-// Diagnostic to check if Render can even see Gmail
-dns.lookup('smtp.gmail.com', { family: 4 }, (err, address) => {
-  if (err) console.error('🌐 DNS Lookup Failed (IPv4) for Gmail:', err.message);
-  else console.log('🌐 DNS Lookup Success (IPv4). Gmail is at:', address);
-});
-
 /**
- * Sends an HTML email.
- * @param {string} to - Recipient email address
- * @param {string} subject - Email subject
- * @param {string} html - HTML body content
+ * Sends an HTML email using the Resend HTTP API.
+ * This is 100% reliable on cloud platforms like Render.
  */
 async function sendMail(to, subject, html) {
   try {
-    await transporter.sendMail({
-      from: `"Fashion Hub 👗" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      html
+    const apiKey = process.env.RESEND_API_KEY || 're_Zf5kt9ru_59smkGyt3LDrSg1kcP74KJhB';
+    
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: 'Fashion Hub <onboarding@resend.dev>',
+        to: [to],
+        subject: subject,
+        html: html
+      })
     });
-    console.log(`✅ Email sent to ${to}: ${subject}`);
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log(`✅ Resend Success: Email delivered to ${to}`);
+    } else {
+      console.error('❌ Resend API Error:', data);
+    }
   } catch (err) {
-    console.error('❌ Email send failed:', err.message);
+    console.error('❌ Resend Network Error:', err.message);
   }
 }
 

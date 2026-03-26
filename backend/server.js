@@ -1,4 +1,5 @@
 require('dotenv').config();
+console.log('🚀 FASHION HUB BACKEND - VERSION 2.0 - LIVE');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
