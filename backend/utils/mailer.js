@@ -4,15 +4,16 @@ const dns = require('dns');
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
-  secure: true, // true for 465, false for 587
+  secure: true, 
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
   tls: {
-    // This helps bypass some cloud certificate issues
     rejectUnauthorized: false
-  }
+  },
+  // CRITICAL: Force IPv4 to avoid Render's IPv6 ENETUNREACH error
+  family: 4 
 });
 
 // Diagnostic to check if Render can even see Gmail
