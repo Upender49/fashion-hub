@@ -39,39 +39,57 @@ export default function Home() {
     }
   };
 
-  const categories = ['All', ...new Set(products.map(p => p.category))];
+  const categories = ['All', 'Dresses', 'Ethnic', 'Sets', 'Tops'];
   const displayedProducts = filter === 'All' ? products : products.filter(p => p.category === filter);
 
   return (
-    <div className="page active">
+    <div id="page-home" className="page active">
+      {/* Hero */}
       <div className="hero">
-        <h1 className="hero-title">Elevate Your Style.</h1>
-        <p className="hero-subtitle">Discover our exclusive new collection of premium fits designed for the modern trendsetter.</p>
-        <button className="btn btn-primary" style={{ marginTop: '24px' }}>Explore Collection</button>
+        <h1>Welcome to Fashion Hub</h1>
+        <p>Curated fashion for every occasion — now with <strong>Sample Try-On</strong> delivered to your door in 1–4 hours</p>
+        <div className="hero-actions">
+          <button className="btn btn-mustard" onClick={() => window.scrollTo({ top: document.getElementById('shop-section').offsetTop, behavior: 'smooth' })}>🛍 Shop Now</button>
+          <button className="btn btn-tryon" onClick={() => navigate('/try-on')}>👗 Try Before You Buy</button>
+        </div>
       </div>
 
-      <div style={{ padding: '0 2rem', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '3rem 0 1.5rem' }}>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem' }}>New Arrivals</h2>
-          <div className="filters">
-            {categories.map(cat => (
-              <button 
-                key={cat} 
-                className={`filter-btn ${filter === cat ? 'active' : ''}`} 
-                onClick={() => setFilter(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+      {/* Sample Try-On Banner */}
+      <div className="tryon-banner">
+        <h2>✨ Introducing Sample Try-On</h2>
+        <p style={{ opacity: 0.9, marginBottom: 0 }}>Order a sample garment, try it on at home, then decide to buy!</p>
+        <div className="tryon-features">
+          <div className="tryon-feature"><span>⚡</span><span>1–4 Hour Delivery</span></div>
+          <div className="tryon-feature"><span>📏</span><span>Custom Measurements</span></div>
+          <div className="tryon-feature"><span>📍</span><span>Live Order Tracking</span></div>
+          <div className="tryon-feature"><span>✅</span><span>Buy Only If It Fits</span></div>
+        </div>
+        <button className="btn btn-olive" onClick={() => navigate('/try-on')}>Browse & Try Now →</button>
+      </div>
+
+      {/* Featured Products */}
+      <div className="section" id="shop-section">
+        <div className="section-title">Featured Collection</div>
+        <div className="section-sub">Handpicked styles just for you</div>
+
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '2rem' }}>
+          {categories.map(cat => (
+            <button 
+              key={cat} 
+              className={`btn btn-outline btn-sm filter-btn ${filter === cat ? 'active' : ''}`}
+              onClick={() => setFilter(cat)}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '4rem 0' }}>Loading fresh styles...</div>
+          <div style={{ textAlign: 'center', padding: '4rem 0' }}>Loading products...</div>
         ) : (
-          <div className="products-grid">
+          <div className="products-grid" id="products-grid">
             {displayedProducts.map(p => (
-              <div key={p._id} className="product-card">
+              <div key={p._id} className="product-card" data-id={p._id}>
                 <div className="product-img">{p.emoji || '👗'}</div>
                 <div className="product-info">
                   <div className="product-name">{p.name}</div>
@@ -87,9 +105,16 @@ export default function Home() {
                 </div>
               </div>
             ))}
+            {displayedProducts.length === 0 && <div style={{width: '100%'}}>No products found for this category.</div>}
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <footer style={{ background: 'var(--charcoal)', color: 'rgba(255,255,255,0.7)', textAlign: 'center', padding: '2rem', fontSize: '0.85rem' }}>
+        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.2rem', color: 'white', marginBottom: '8px' }}>Fashion Hub · by Isabel Mercado</div>
+        <div>© 2026 Fashion Hub. All rights reserved.</div>
+      </footer>
     </div>
   );
 }
