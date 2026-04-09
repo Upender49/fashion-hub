@@ -55,7 +55,24 @@ app.post('/api/auth/signup', async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already registered' });
+      if (existingUser.isVerified) {
+        return res.status(400).json({ message: 'Email already registered. Please login.' });
+      } else {
+        // User exists but isn't verified - update OTP and resend
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        existingUser.otp = otp;
+        existingUser.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+        await existingUser.save();
+        
+        console.log(`🔄 Resending OTP to unverified user: ${email}`);
+        await sendMail(existingUser.email, '🔐 Your Fashion Hub Login Code', otpEmail(existingUser.name, otp));
+        
+        return res.json({
+          message: 'An unverified account exists. A fresh OTP has been sent.',
+          requiresOtp: true,
+          email: existingUser.email
+        });
+      }
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -67,7 +84,9 @@ app.post('/api/auth/signup', async (req, res) => {
     const newUser = new User({ name, email, password_hash, otp, otpExpiry, isVerified: false });
     await newUser.save();
 
-    sendMail(newUser.email, '🔐 Your Fashion Hub Login Code', otpEmail(newUser.name, otp));
+    console.log(`📩 Sending signup OTP to: ${newUser.email}`);
+    await sendMail(newUser.email, '🔐 Your Fashion Hub Login Code', otpEmail(newUser.name, otp));
+    
     res.status(201).json({
       message: 'Account created. OTP sent to your email.',
       requiresOtp: true,
@@ -99,7 +118,8 @@ app.post('/api/auth/login', async (req, res) => {
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    sendMail(user.email, '🔐 Your Fashion Hub Login Code', otpEmail(user.name, otp));
+    console.log(`📩 Sending login OTP to: ${user.email}`);
+    await sendMail(user.email, '🔐 Your Fashion Hub Login Code', otpEmail(user.name, otp));
 
     res.json({
       message: 'OTP sent to your email.',
