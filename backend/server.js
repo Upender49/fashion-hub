@@ -33,7 +33,7 @@ const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }); // 5M
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/fashionhub')
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/fashionhub')
   .then(() => console.log('✅ Connected to MongoDB Database'))
   .catch(err => console.error('❌ Database connection error:', err));
 
